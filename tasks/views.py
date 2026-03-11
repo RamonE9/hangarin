@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Task
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 
 def dashboard(request):
@@ -8,16 +8,18 @@ def dashboard(request):
     return render(request, "tasks/dashboard.html", {"tasks": tasks})
 
 
-@login_required
+
 def create_task(request):
     if request.method == "POST":
         title = request.POST["title"]
         description = request.POST["description"]
 
+        user = User.objects.first()
+
         Task.objects.create(
             title=title,
             description=description,
-            user=request.user
+            user=user
         )
 
         return redirect("dashboard")
@@ -25,7 +27,6 @@ def create_task(request):
     return render(request, "tasks/create_task.html")
 
 
-@login_required
 def update_task(request, pk):
     task = Task.objects.get(id=pk)
 
@@ -39,17 +40,15 @@ def update_task(request, pk):
     return render(request, "tasks/update_task.html", {"task": task})
 
 
-@login_required
 def delete_task(request, pk):
-    task = get_object_or_404(Task, id=pk, user=request.user)
+    task = get_object_or_404(Task, id=pk)
     task.delete()
 
     return redirect("dashboard")
 
 
-@login_required
 def complete_task(request, pk):
-    task = get_object_or_404(Task, id=pk, user=request.user)
+    task = get_object_or_404(Task, id=pk)
     task.completed = not task.completed
     task.save()
 
