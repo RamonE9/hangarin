@@ -3,9 +3,8 @@ from .models import Task
 from django.contrib.auth.decorators import login_required
 
 
-@login_required
 def dashboard(request):
-    tasks = Task.objects.filter(user=request.user)
+    tasks = Task.objects.all()
     return render(request, "tasks/dashboard.html", {"tasks": tasks})
 
 
