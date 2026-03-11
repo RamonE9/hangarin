@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Edit Task</h2>
+
+<form method="POST">
+{% csrf_token %}
+
+<input 
+class="form-control mb-2" 
+name="title" 
+value="{{ task.title }}"
+>
+
+<textarea 
+class="form-control mb-2" 
+name="description"
+>{{ task.description }}</textarea>
+
+<button class="btn btn-primary">Update Task</button>
+
+</form>
+
+{% endblock %}

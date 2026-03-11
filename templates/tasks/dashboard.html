@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="h3 mb-4 text-gray-800">My Tasks</h1>
+
+<a href="/create" class="btn btn-primary mb-3">Add Task</a>
+
+{% for task in tasks %}
+
+<div class="card mb-3">
+<div class="card-body">
+
+<h5>{{ task.title }}</h5>
+<p>{{ task.description }}</p>
+
+{% if task.completed %}
+<span class="badge badge-success">Completed</span>
+{% else %}
+<span class="badge badge-warning">Pending</span>
+{% endif %}
+
+<br><br>
+
+<a href="/complete/{{task.id}}" class="btn btn-success btn-sm">Toggle</a>
+<a href="{% url 'update_task' task.id %}" class="btn btn-info btn-sm">Edit</a>
+<a href="/delete/{{task.id}}" class="btn btn-danger btn-sm">Delete</a>
+
+</div>
+</div>
+
+{% endfor %}
+
+{% endblock %}
