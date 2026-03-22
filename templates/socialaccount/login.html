@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+<div class="col-md-6">
+
+<div class="card shadow p-4 text-center">
+
+<h4>Continue with Google</h4>
+
+<p>You are about to sign in using your Google account.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button class="btn btn-danger w-100">
+        Continue with Google
+    </button>
+</form>
+
+<a href="{% url 'account_login' %}" class="btn btn-secondary mt-2 w-100">Cancel</a>
+
+</div>
+
+</div>
+</div>
+
+{% endblock %}

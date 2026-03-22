@@ -3,39 +3,63 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
-<title>Hangarin Dashboard</title>
+<title>Hangarin</title>
 
 <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
 <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+
+<style>
+body {
+    background-color: #f8f9fc;
+}
+</style>
 
 </head>
 
 <body id="page-top">
 
-<div id="wrapper">
+<!-- 🔷 TOP NAVBAR -->
+<nav class="navbar navbar-expand navbar-light bg-white shadow mb-4">
 
-<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion">
+    <div class="container-fluid">
 
-<li class="nav-item">
-<a class="nav-link" href="/">
-<span>Dashboard</span>
-</a>
-</li>
+        <!-- LOGO -->
+        <span class="navbar-brand font-weight-bold text-primary">
+            Hangarin
+        </span>
 
-<li class="nav-item">
-<a class="nav-link" href="/create">
-<span>Create Task</span>
-</a>
-</li>
+        <!-- RIGHT SIDE -->
+        <ul class="navbar-nav ml-auto">
 
-</ul>
+            {% if user.is_authenticated %}
+            <li class="nav-item dropdown no-arrow">
 
-<div id="content-wrapper" class="d-flex flex-column">
+                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">
+                        {{ user.username }}
+                    </span>
+                    <i class="fas fa-user-circle fa-lg"></i>
+                </a>
 
-<div id="content">
+                <div class="dropdown-menu dropdown-menu-right shadow">
+                    <a class="dropdown-item" href="{% url 'account_logout' %}">
+                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Logout
+                    </a>
+                </div>
 
+            </li>
+            {% endif %}
+
+        </ul>
+
+    </div>
+
+</nav>
+
+<!-- 🔷 MAIN CONTENT -->
 <div class="container-fluid">
 
 {% block content %}
@@ -43,14 +67,12 @@
 
 </div>
 
-</div>
-
-</div>
-
-</div>
-
+<!-- 🔻 SCRIPTS -->
 <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
 <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script src="{% static 'js/calendar.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
 </html>

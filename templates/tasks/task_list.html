@@ -1,0 +1,63 @@
+<div class="row">
+
+<!-- LEFT SIDE -->
+<div class="col-md-6">
+
+<div class="card mb-4">
+<div class="card-header">
+Task Calendar
+</div>
+
+<div class="card-body">
+<div id="calendar"></div>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- RIGHT SIDE -->
+<div class="col-md-6">
+
+<h4>My Tasks</h4>
+
+<a href="{% url 'create_task' %}" class="btn btn-primary mb-3">
+Add Task
+</a>
+
+<div class="row">
+
+{% for task in tasks %}
+
+<div class="col-md-6 mb-3">
+
+<div class="card shadow-sm">
+
+<div class="card-body">
+
+<h6>{{ task.title }}</h6>
+
+<p class="small text-muted">
+{{ task.description|truncatechars:50 }}
+</p>
+
+{% if task.completed %}
+<span class="badge bg-success">Done</span>
+{% else %}
+<span class="badge bg-warning text-dark">Pending</span>
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</div>

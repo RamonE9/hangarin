@@ -7,9 +7,18 @@
 <form method="POST">
 {% csrf_token %}
 
-<input class="form-control mb-2" name="title" placeholder="Task Title">
+<input class="form-control mb-2" name="title" placeholder="Task Title" required>
 
 <textarea class="form-control mb-2" name="description" placeholder="Description"></textarea>
+
+<label>Deadline</label> <input type="date" class="form-control mb-3" name="due_date">
+
+<label>Priority</label> <select class="form-control mb-3" name="priority">
+
+<option value="low">Low</option>
+<option value="medium">Medium</option>
+<option value="high">High</option>
+</select>
 
 <button class="btn btn-primary">Create</button>
 
