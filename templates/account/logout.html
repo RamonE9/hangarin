@@ -1,25 +1,21 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}Logout — Hangarin{% endblock %}
 
 {% block content %}
-
-<div class="row justify-content-center">
-<div class="col-md-6">
-
-<div class="card shadow p-4 text-center">
-
-<h4>Logout</h4>
-<p>Are you sure you want to logout?</p>
-
-<form method="post" action="{% url 'account_logout' %}">
-    {% csrf_token %}
-    <button class="btn btn-danger w-100">Logout</button>
-</form>
-
-<a href="{% url 'dashboard' %}" class="btn btn-secondary mt-2 w-100">Cancel</a>
-
+<div class="container" style="max-width: 440px; margin: 0 auto; padding-top: 60px;">
+    <div class="glass-card animate-fade-in" style="padding: 40px; text-align: center;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(244, 63, 94, 0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+            <i class="fas fa-sign-out-alt" style="font-size: 1.5rem; color: var(--accent-rose);"></i>
+        </div>
+        <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Logout</h2>
+        <p style="color: var(--text-muted); margin-bottom: 32px;">Are you sure you want to sign out?</p>
+        
+        <form method="post" action="{% url 'account_logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn--danger btn--block btn--lg" style="margin-bottom: 12px;">Yes, Sign Out</button>
+        </form>
+        <a href="{% url 'dashboard' %}" class="btn btn--ghost btn--block">Cancel</a>
+    </div>
 </div>
-
-</div>
-</div>
-
 {% endblock %}

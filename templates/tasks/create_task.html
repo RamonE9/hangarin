@@ -1,27 +1,48 @@
 {% extends "base.html" %}
 
+{% block title %}Create Task — Hangarin{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
 {% block content %}
-
-<h2>Create Task</h2>
-
-<form method="POST">
-{% csrf_token %}
-
-<input class="form-control mb-2" name="title" placeholder="Task Title" required>
-
-<textarea class="form-control mb-2" name="description" placeholder="Description"></textarea>
-
-<label>Deadline</label> <input type="date" class="form-control mb-3" name="due_date">
-
-<label>Priority</label> <select class="form-control mb-3" name="priority">
-
-<option value="low">Low</option>
-<option value="medium">Medium</option>
-<option value="high">High</option>
-</select>
-
-<button class="btn btn-primary">Create</button>
-
-</form>
-
+<div class="container" style="max-width: 600px; margin: 0 auto;">
+    <div class="glass-card animate-fade-in" style="padding: 40px;">
+        <div style="margin-bottom: 32px;">
+            <a href="{% url 'dashboard' %}" class="btn btn--ghost btn--sm" style="margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <h1 style="font-size: 1.5rem; margin-bottom: 4px;"><i class="fas fa-plus-circle" style="margin-right: 8px; color: var(--accent-primary);"></i>Create New Task</h1>
+            <p style="color: var(--text-muted); margin: 0;">Fill in the details below</p>
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Title</label>
+                <input type="text" name="title" class="form-input" placeholder="What needs to be done?" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-input" placeholder="Add details about this task..." rows="4"></textarea>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Due Date</label>
+                    <input type="date" name="due_date" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select name="priority" class="form-input">
+                        <option value="low">🟢 Low</option>
+                        <option value="medium" selected>🟡 Medium</option>
+                        <option value="high">🔴 High</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                <a href="{% url 'dashboard' %}" class="btn btn--ghost">Cancel</a>
+                <button type="submit" class="btn btn--primary btn--lg">Create Task</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

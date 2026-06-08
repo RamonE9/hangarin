@@ -1,18 +1,50 @@
-{% extends 'base.html' %} {% load static %} {% block content %}
-<div class="content">
-    <div class="container-fluid">
-        <h4 class="page-title">Home</h4>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Page Title</div>
-                        <div class="card-category">Page Subtitle</div>
-                    </div>
-                    <div class="card-body">Hello, world!</div>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangarin — Task Management</title>
+    <meta name="description" content="Hangarin — Modern task management for productive people. Organize, track, and achieve your goals.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="{% static 'css/hangarin.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="hero">
+        <!-- Floating orbs for visual flair -->
+        <div style="position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,0.12),transparent 70%);top:10%;left:15%;animation:float 6s ease-in-out infinite;"></div>
+        <div style="position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(6,182,212,0.1),transparent 70%);bottom:20%;right:10%;animation:float 8s ease-in-out infinite 1s;"></div>
+        <div style="position:absolute;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.1),transparent 70%);top:60%;left:60%;animation:float 7s ease-in-out infinite 0.5s;"></div>
+        
+        <div class="hero__content">
+            <h1 class="hero__title animate-fade-in">Hangarin</h1>
+            <p class="hero__subtitle animate-fade-in animate-delay-1">Organize your tasks. Track your progress. Achieve your goals — all in one beautiful dashboard.</p>
+            <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;" class="animate-fade-in animate-delay-2">
+                <a href="/dashboard/" class="btn btn--primary btn--lg">Go to Dashboard <i class="fas fa-arrow-right" style="margin-left:8px;"></i></a>
+                <a href="/accounts/login/" class="btn btn--ghost btn--lg" style="border:1px solid var(--border-color);">Sign In</a>
+            </div>
+            
+            <div class="hero__features animate-fade-in animate-delay-3">
+                <div class="glass-card" style="padding:20px;text-align:center;">
+                    <i class="fas fa-tasks" style="font-size:2rem;color:var(--accent-primary);margin-bottom:12px;"></i>
+                    <h3 style="font-size:1rem;margin-bottom:4px;">Organize</h3>
+                    <p style="font-size:0.8rem;color:var(--text-muted);margin:0;">Create & prioritize tasks effortlessly</p>
+                </div>
+                <div class="glass-card" style="padding:20px;text-align:center;">
+                    <i class="fas fa-chart-line" style="font-size:2rem;color:var(--accent-cyan);margin-bottom:12px;"></i>
+                    <h3 style="font-size:1rem;margin-bottom:4px;">Track</h3>
+                    <p style="font-size:0.8rem;color:var(--text-muted);margin:0;">Monitor progress in real time</p>
+                </div>
+                <div class="glass-card" style="padding:20px;text-align:center;">
+                    <i class="fas fa-trophy" style="font-size:2rem;color:var(--accent-amber);margin-bottom:12px;"></i>
+                    <h3 style="font-size:1rem;margin-bottom:4px;">Achieve</h3>
+                    <p style="font-size:0.8rem;color:var(--text-muted);margin:0;">Hit deadlines & celebrate wins</p>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+</body>
+</html>

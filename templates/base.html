@@ -1,78 +1,76 @@
 {% load static %}
+{% load pwa %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8">
-<title>Hangarin</title>
-
-<link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
-<link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-
-<style>
-body {
-    background-color: #f8f9fc;
-}
-</style>
-
+    {% progressive_web_app_meta %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Hangarin{% endblock %}</title>
+    <meta name="description" content="Hangarin — Modern task management for productive people">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{% static 'css/hangarin.css' %}" rel="stylesheet">
 </head>
-
-<body id="page-top">
-
-<!-- 🔷 TOP NAVBAR -->
-<nav class="navbar navbar-expand navbar-light bg-white shadow mb-4">
-
-    <div class="container-fluid">
-
-        <!-- LOGO -->
-        <span class="navbar-brand font-weight-bold text-primary">
-            Hangarin
-        </span>
-
-        <!-- RIGHT SIDE -->
-        <ul class="navbar-nav ml-auto">
-
+<body>
+    {% block body %}
+    <!-- Navbar -->
+    <nav class="navbar" id="main-navbar">
+        <a href="{% url 'dashboard' %}" class="navbar-brand">Hangarin</a>
+        <div style="display: flex; align-items: center; gap: 8px;">
             {% if user.is_authenticated %}
-            <li class="nav-item dropdown no-arrow">
-
-                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
-                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">
-                        {{ user.username }}
-                    </span>
-                    <i class="fas fa-user-circle fa-lg"></i>
+            <div class="navbar-links">
+                <a href="{% url 'dashboard' %}" class="nav-link {% block nav_dashboard %}{% endblock %}">Dashboard</a>
+            </div>
+            <div class="navbar-user">
+                <span style="color: var(--text-secondary); font-size: 0.875rem;">{{ user.username }}</span>
+                <div class="user-avatar">{{ user.username|first|upper }}</div>
+                <a href="{% url 'account_logout' %}" class="btn btn--ghost btn--sm" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
                 </a>
-
-                <div class="dropdown-menu dropdown-menu-right shadow">
-                    <a class="dropdown-item" href="{% url 'account_logout' %}">
-                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Logout
-                    </a>
-                </div>
-
-            </li>
+            </div>
             {% endif %}
+        </div>
+    </nav>
 
-        </ul>
-
+    <!-- Toast Container for Django Messages -->
+    <div class="toast-container" id="toast-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="django-message" data-type="{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
     </div>
 
-</nav>
+    <!-- Main Content -->
+    <div class="page-wrapper">
+        {% block content %}{% endblock %}
+    </div>
+    {% endblock %}
 
-<!-- 🔷 MAIN CONTENT -->
-<div class="container-fluid">
-
-{% block content %}
-{% endblock %}
-
-</div>
-
-<!-- 🔻 SCRIPTS -->
-<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
-<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-<script src="{% static 'js/calendar.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="{% static 'js/hangarin.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+    
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/serviceworker.js')
+        .then(function(reg) {
+            console.log("Service worker registered", reg);
+        });
+    }
+    </script>
 </body>
 </html>
