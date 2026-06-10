@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Task
+from .models import Task, Project, Subtask
+import json
 
 
 def home(request):
@@ -45,8 +46,11 @@ def dashboard(request):
     completed = Task.objects.filter(user=request.user, completed=True).count()
     pending = Task.objects.filter(user=request.user, completed=False).count()
 
+    projects = Project.objects.filter(user=request.user)
+
     return render(request, "tasks/dashboard.html", {
         "tasks": tasks,
+        "projects": projects,
         "completed": completed,
         "pending": pending,
         "status_filter": status_filter,
@@ -74,17 +78,22 @@ def create_task(request):
         description = request.POST.get("description", "")
         due_date = request.POST.get("due_date") or None
         priority = request.POST.get("priority", "low")
-        user = request.user
+        project_id = request.POST.get("project")
+        project = Project.objects.get(id=project_id, user=user) if project_id else None
+        
         Task.objects.create(
             title=title,
             description=description,
             due_date=due_date,
             priority=priority,
-            user=user
+            user=user,
+            project=project
         )
         messages.success(request, f'Task "{title}" created successfully!')
         return redirect("dashboard")
-    return render(request, "tasks/create_task.html")
+    
+    projects = Project.objects.filter(user=request.user)
+    return render(request, "tasks/create_task.html", {"projects": projects})
 
 
 @login_required
@@ -95,10 +104,15 @@ def update_task(request, pk):
         task.description = request.POST.get("description", "")
         task.due_date = request.POST.get("due_date") or None
         task.priority = request.POST.get("priority", task.priority)
+        project_id = request.POST.get("project")
+        task.project = Project.objects.get(id=project_id, user=request.user) if project_id else None
+        
         task.save()
         messages.success(request, f'Task "{task.title}" updated successfully!')
         return redirect("dashboard")
-    return render(request, "tasks/update_task.html", {"task": task})
+    
+    projects = Project.objects.filter(user=request.user)
+    return render(request, "tasks/update_task.html", {"task": task, "projects": projects})
 
 
 @login_required
@@ -145,3 +159,112 @@ def task_stats(request):
         "completed": completed,
         "pending": pending
     })
+
+
+# ==========================================
+# PROJECTS CRUD
+# ==========================================
+
+@login_required
+def project_list(request):
+    projects = Project.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'tasks/project_list.html', {'projects': projects})
+
+@login_required
+def create_project(request):
+    if request.method == "POST":
+        name = request.POST["name"]
+        description = request.POST.get("description", "")
+        Project.objects.create(name=name, description=description, user=request.user)
+        messages.success(request, f'Project "{name}" created successfully!')
+        return redirect('project_list')
+    return render(request, 'tasks/create_project.html')
+
+@login_required
+def project_detail(request, pk):
+    project = get_object_or_404(Project, id=pk, user=request.user)
+    tasks = Task.objects.filter(project=project)
+    
+    # Quick filtering
+    status_filter = request.GET.get('status', '')
+    if status_filter == 'completed':
+        tasks = tasks.filter(completed=True)
+    elif status_filter == 'pending':
+        tasks = tasks.filter(completed=False)
+        
+    completed = tasks.filter(completed=True).count()
+    pending = tasks.filter(completed=False).count()
+    
+    return render(request, "tasks/dashboard.html", {
+        "tasks": tasks,
+        "current_project": project,
+        "completed": completed,
+        "pending": pending,
+        "status_filter": status_filter,
+    })
+
+@login_required
+def update_project(request, pk):
+    project = get_object_or_404(Project, id=pk, user=request.user)
+    if request.method == "POST":
+        project.name = request.POST["name"]
+        project.description = request.POST.get("description", "")
+        project.save()
+        messages.success(request, f'Project "{project.name}" updated successfully!')
+        return redirect('project_list')
+    return render(request, 'tasks/update_project.html', {'project': project})
+
+@login_required
+def delete_project(request, pk):
+    project = get_object_or_404(Project, id=pk, user=request.user)
+    if request.method == "POST":
+        name = project.name
+        project.delete()
+        messages.success(request, f'Project "{name}" deleted successfully!')
+        return redirect('project_list')
+    return redirect('project_list')
+
+
+# ==========================================
+# SUBTASKS API
+# ==========================================
+
+@login_required
+def create_subtask(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            task_id = data.get('task_id')
+            title = data.get('title')
+            
+            task = get_object_or_404(Task, id=task_id, user=request.user)
+            subtask = Subtask.objects.create(title=title, task=task)
+            
+            return JsonResponse({
+                'status': 'success',
+                'subtask': {
+                    'id': subtask.id,
+                    'title': subtask.title,
+                    'completed': subtask.completed
+                }
+            })
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+@login_required
+def toggle_subtask(request, pk):
+    if request.method == "POST":
+        subtask = get_object_or_404(Subtask, id=pk, task__user=request.user)
+        subtask.completed = not subtask.completed
+        subtask.save()
+        return JsonResponse({'status': 'success', 'completed': subtask.completed})
+    return JsonResponse({'status': 'error'}, status=400)
+
+@login_required
+def delete_subtask(request, pk):
+    if request.method == "POST":
+        subtask = get_object_or_404(Subtask, id=pk, task__user=request.user)
+        subtask.delete()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)

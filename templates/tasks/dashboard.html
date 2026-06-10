@@ -84,6 +84,12 @@
                         <span><i class="fas fa-calendar" style="margin-right:4px;"></i>{{ task.due_date|date:"M d, Y" }}</span>
                         {% endif %}
                         <span class="badge badge--{{ task.priority }}">{{ task.priority|title }}</span>
+                        {% if task.project %}
+                        <span><i class="fas fa-folder" style="margin-right:4px; color: var(--accent-primary);"></i>{{ task.project.name }}</span>
+                        {% endif %}
+                        {% if task.subtasks.count > 0 %}
+                        <span style="color: var(--accent-cyan);"><i class="fas fa-list-check" style="margin-right:4px;"></i>{{ task.subtasks.count }}</span>
+                        {% endif %}
                     </div>
                     
                     <div class="task-card__actions">

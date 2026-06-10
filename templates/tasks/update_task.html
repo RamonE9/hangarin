@@ -38,11 +38,132 @@
                     </select>
                 </div>
             </div>
+            <div class="form-group">
+                <label class="form-label">Project</label>
+                <select name="project" class="form-input">
+                    <option value="">-- No Project --</option>
+                    {% for p in projects %}
+                    <option value="{{ p.id }}" {% if task.project_id == p.id %}selected{% endif %}>{{ p.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
             <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
                 <a href="{% url 'dashboard' %}" class="btn btn--ghost">Cancel</a>
                 <button type="submit" class="btn btn--primary btn--lg">Update Task</button>
             </div>
         </form>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 32px 0;">
+
+        <!-- SUBTASKS SECTION -->
+        <div id="subtasks-section">
+            <h3 style="font-size: 1.1rem; margin-bottom: 16px;"><i class="fas fa-list-check" style="margin-right: 8px; color: var(--accent-emerald);"></i>Subtasks</h3>
+            
+            <div id="subtasks-list" style="margin-bottom: 16px;">
+                {% for subtask in task.subtasks.all %}
+                <div class="subtask-item" id="subtask-{{ subtask.id }}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-bottom: 8px;">
+                    <div style="display: flex; align-items: center; gap: 12px; flex-grow: 1;">
+                        <input type="checkbox" {% if subtask.completed %}checked{% endif %} onchange="toggleSubtask({{ subtask.id }})" style="width: 18px; height: 18px; accent-color: var(--accent-primary); cursor: pointer;">
+                        <span style="font-size: 0.95rem; {% if subtask.completed %}text-decoration: line-through; color: var(--text-muted);{% endif %}" id="subtask-text-{{ subtask.id }}">{{ subtask.title }}</span>
+                    </div>
+                    <button type="button" class="btn btn--icon btn--ghost btn--sm" onclick="deleteSubtask({{ subtask.id }})" style="color: var(--text-muted);">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="new-subtask-title" class="form-input" placeholder="Add a new subtask..." onkeypress="if(event.key === 'Enter') { event.preventDefault(); addSubtask(); }">
+                <button type="button" class="btn btn--secondary" onclick="addSubtask()" style="background: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary);"><i class="fas fa-plus"></i></button>
+            </div>
+        </div>
+
     </div>
 </div>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    function addSubtask() {
+        const input = document.getElementById('new-subtask-title');
+        const title = input.value.trim();
+        if (!title) return;
+
+        fetch('{% url "create_subtask" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ task_id: {{ task.id }}, title: title })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const list = document.getElementById('subtasks-list');
+                const html = `
+                <div class="subtask-item" id="subtask-${data.subtask.id}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); margin-bottom: 8px;">
+                    <div style="display: flex; align-items: center; gap: 12px; flex-grow: 1;">
+                        <input type="checkbox" onchange="toggleSubtask(${data.subtask.id})" style="width: 18px; height: 18px; accent-color: var(--accent-primary); cursor: pointer;">
+                        <span style="font-size: 0.95rem;" id="subtask-text-${data.subtask.id}">${data.subtask.title}</span>
+                    </div>
+                    <button type="button" class="btn btn--icon btn--ghost btn--sm" onclick="deleteSubtask(${data.subtask.id})" style="color: var(--text-muted);">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>`;
+                list.insertAdjacentHTML('beforeend', html);
+                input.value = '';
+            }
+        });
+    }
+
+    function toggleSubtask(id) {
+        fetch(`/subtasks/${id}/toggle/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrftoken }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const textEl = document.getElementById(`subtask-text-${id}`);
+                if (data.completed) {
+                    textEl.style.textDecoration = 'line-through';
+                    textEl.style.color = 'var(--text-muted)';
+                } else {
+                    textEl.style.textDecoration = 'none';
+                    textEl.style.color = 'inherit';
+                }
+            }
+        });
+    }
+
+    function deleteSubtask(id) {
+        fetch(`/subtasks/${id}/delete/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrftoken }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById(`subtask-${id}`).remove();
+            }
+        });
+    }
+</script>
 {% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Project — Hangarin{% endblock %}
+{% block nav_projects %}active{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; margin: 0 auto;">
+    <div class="glass-card animate-fade-in" style="padding: 40px;">
+        <div style="margin-bottom: 32px;">
+            <a href="{% url 'project_list' %}" class="btn btn--ghost btn--sm" style="margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fas fa-arrow-left"></i> Back to Projects
+            </a>
+            <h1 style="font-size: 1.5rem; margin-bottom: 4px;"><i class="fas fa-pen" style="margin-right: 8px; color: var(--accent-cyan);"></i>Edit Project</h1>
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Project Name</label>
+                <input type="text" name="name" class="form-input" value="{{ project.name }}" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-input" rows="4">{{ project.description }}</textarea>
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                <a href="{% url 'project_list' %}" class="btn btn--ghost">Cancel</a>
+                <button type="submit" class="btn btn--primary btn--lg">Update Project</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

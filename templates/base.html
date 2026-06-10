@@ -32,6 +32,7 @@
             {% if user.is_authenticated %}
             <div class="navbar-links">
                 <a href="{% url 'dashboard' %}" class="nav-link {% block nav_dashboard %}{% endblock %}">Dashboard</a>
+                <a href="{% url 'project_list' %}" class="nav-link {% block nav_projects %}{% endblock %}">Projects</a>
             </div>
             <div class="navbar-user">
                 <span style="color: var(--text-secondary); font-size: 0.875rem;">{{ user.username }}</span>
